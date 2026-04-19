@@ -41,18 +41,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 #toast{position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-100px);background:rgba(8,20,40,.97);border:1px solid var(--accent);border-radius:10px;padding:9px 15px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--accent);z-index:8999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(12px);max-width:88vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 #toast.show{transform:translateX(-50%) translateY(0);}
 
-/* INCOMING CALL OVERLAY */
-#callOverlay{position:fixed;inset:0;z-index:99990;background:rgba(1,4,10,.93);backdrop-filter:blur(12px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;}
+/* CALL OVERLAY (UI TELEPON ASLI) */
+#callOverlay{position:fixed;inset:0;z-index:99990;background:rgba(1,4,10,.95);backdrop-filter:blur(16px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
 #callOverlay.show{display:flex;}
-.co-sym{font-size:4rem;animation:coRing 1s ease-in-out infinite;}
-@keyframes coRing{0%,100%{transform:rotate(0);}15%{transform:rotate(-18deg);}30%{transform:rotate(18deg);}45%{transform:rotate(-10deg);}60%{transform:rotate(10deg);}75%{transform:rotate(-5deg);}90%{transform:rotate(5deg);}}
-.co-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:2px;}
-.co-type{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;opacity:.6;}
-.co-btns{display:flex;gap:16px;}
-.co-accept{padding:14px 28px;border-radius:99px;border:1px solid rgba(77,227,125,.4);background:rgba(77,227,125,.18);color:#4de37d;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all .15s;}
-.co-accept:active{background:rgba(77,227,125,.35);}
-.co-decline{padding:14px 28px;border-radius:99px;border:1px solid rgba(255,31,31,.3);background:rgba(255,31,31,.12);color:#ff1f1f;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all .15s;}
-.co-decline:active{background:rgba(255,31,31,.28);}
+.co-avatar-ring {position:relative;width:130px;height:130px;border-radius:50%;border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;background:rgba(0,212,255,0.05);animation:callPulse 1.5s infinite;margin-bottom:10px;}
+.co-sym{font-size:4.5rem;animation:coRing 1s ease-in-out infinite;}
+@keyframes coRing{0%,100%{transform:rotate(0);}15%{transform:rotate(-12deg);}30%{transform:rotate(12deg);}45%{transform:rotate(-8deg);}60%{transform:rotate(8deg);}}
+.co-name{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;letter-spacing:2px;text-align:center;}
+.co-type{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:4px;opacity:.7;color:#fff;}
+.co-btns{display:flex;gap:20px;margin-top:20px;}
+.co-btn{padding:16px 32px;border-radius:99px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.co-btn:active{transform:scale(0.95);}
+.co-accept{border:1px solid rgba(77,227,125,.5);background:rgba(77,227,125,.2);color:#4de37d;box-shadow:0 0 15px rgba(77,227,125,.3);}
+.co-accept:hover{background:rgba(77,227,125,.3);}
+.co-decline{border:1px solid rgba(255,31,31,.5);background:rgba(255,31,31,.2);color:#ff1f1f;box-shadow:0 0 15px rgba(255,31,31,.3);}
+.co-decline:hover{background:rgba(255,31,31,.3);}
 
 /* SCREENS */
 .scr{display:none;position:fixed;inset:0;z-index:10;flex-direction:column;background:var(--bg);}
@@ -91,12 +94,12 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .ch-btn{background:none;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;transition:all .15s;font-family:'Share Tech Mono',monospace;font-size:9px;}
 .ch-btn:active{background:rgba(255,255,255,.08);}
 
-/* CALL BARS (NEW FEATURE) */
+/* CALL BARS */
 .call-bar {display:flex;gap:10px;padding:12px;background:rgba(6,14,28,.9);border-bottom:1px solid var(--border);flex-shrink:0;justify-content:center;box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
 .call-btn {flex:1;padding:12px;border-radius:8px;border:1px solid var(--accent);background:rgba(0,212,255,.05);color:var(--accent);font-family:'Syne',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
 .call-btn:active {background:rgba(0,212,255,.15);transform:scale(0.98);}
 .call-btn.calling {border-color:var(--safe);color:var(--bg);background:var(--safe);animation:callPulse 1.5s infinite;}
-@keyframes callPulse{0%,100%{box-shadow:0 0 0 0 rgba(77,227,125,.4);}50%{box-shadow:0 0 0 6px rgba(77,227,125,0);}}
+@keyframes callPulse{0%,100%{box-shadow:0 0 0 0 rgba(77,227,125,.4);}50%{box-shadow:0 0 0 10px rgba(77,227,125,0);}}
 
 .msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:7px;-webkit-overflow-scrolling:touch;}
 .msgs::-webkit-scrollbar{width:2px;}
@@ -148,7 +151,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .ag-online{width:8px;height:8px;border-radius:50%;flex-shrink:0;opacity:.25;transition:all .3s;}
 .ag-online.on{opacity:1;box-shadow:0 0 6px currentColor;}
 
-/* CALL BUBBLE */
+/* CALL BUBBLE (DURASI TELPON) */
 #callBub{position:fixed;bottom:20px;right:16px;width:64px;height:64px;border-radius:50%;background:var(--safe);display:none;align-items:center;justify-content:center;font-size:20px;z-index:8000;border:3px solid rgba(255,255,255,.3);box-shadow:0 0 24px var(--safe);cursor:pointer;animation:callPulse 1.5s infinite;}
 </style>
 </head>
@@ -167,12 +170,19 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 </div>
 
 <div id="callOverlay">
-  <div class="co-sym" id="coSym">◎</div>
+  <div class="co-avatar-ring" id="coAvatarRing">
+    <div class="co-sym" id="coSym">◎</div>
+  </div>
   <div class="co-name" id="coName">—</div>
   <div class="co-type" id="coType">INCOMING CALL</div>
-  <div class="co-btns">
-    <button class="co-accept" id="coAccept">✓ ANGKAT</button>
-    <button class="co-decline" id="coDecline">✕ TOLAK</button>
+  
+  <div class="co-btns" id="coBtnsIncoming" style="display:none;">
+    <button class="co-btn co-accept" id="coAccept">📞 ANGKAT</button>
+    <button class="co-btn co-decline" id="coDecline">📵 TOLAK</button>
+  </div>
+
+  <div class="co-btns" id="coBtnsOutgoing" style="display:none;">
+    <button class="co-btn co-decline" id="coCancel">📵 BATALKAN</button>
   </div>
 </div>
 
@@ -273,7 +283,6 @@ const FB = initializeApp({
 const db = getDatabase(FB);
 const auth = getAuth(FB);
 
-// ── AUDIO LINKS ──
 const RINGTONE = {
   MIO:  "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/mio%20(3).mp3",
   PENA: "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/pena%20(1).mp3",
@@ -291,7 +300,6 @@ const DM_SOUND = {
   AL:   "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/Al%20dm.mp3"
 };
 
-// ── AGENTS ──
 const AG = {
   MIO:  {code:'I.S-01',color:'#ffffff',sym:'◎',role:'LEAD',     city:'Medan',    lat:3.595, lng:98.672},
   PENA: {code:'I.S-02',color:'#4a8edb',sym:'△',role:'TACTICAL', city:'Palembang',lat:-2.976,lng:104.775},
@@ -308,7 +316,6 @@ let currentAudio=null, pendingCall=null;
 let unsubChat = { group: null, dm: null };
 let unsubTyping = { group: null, dm: null };
 
-// ── AUDIO ──
 function playAudio(url, loop=false) {
   stopAudio();
   if(!url) return;
@@ -321,7 +328,6 @@ function stopAudio() {
   if(currentAudio){ currentAudio.pause(); currentAudio.currentTime=0; currentAudio=null; }
 }
 
-// ── HELPERS ──
 function esc(s){ const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
 function fmtTime(t){ return t?new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):''; }
 function log(msg,warn){
@@ -343,16 +349,19 @@ function breach(){
   setTimeout(()=>{ ov.style.display='none'; cg.style.borderColor='var(--safe)'; cg.style.color='var(--safe)'; },2500);
 }
 
-// ── INCOMING CALL OVERLAY ──
-function showCallOverlay(callerKey, callType, onAccept, onDecline) {
+// FUNGSI LAYAR PANGGILAN MASUK
+function showIncomingCall(callerKey, callType, onAccept, onDecline) {
   const ag = AG[callerKey]||{color:'#00d4ff',sym:'◎'};
+  document.getElementById('coBtnsIncoming').style.display = 'flex';
+  document.getElementById('coBtnsOutgoing').style.display = 'none';
   document.getElementById('coSym').textContent = ag.sym;
   document.getElementById('coSym').style.color = ag.color;
   document.getElementById('coName').textContent = callerKey;
   document.getElementById('coName').style.color = ag.color;
   document.getElementById('coType').textContent = callType;
-  document.getElementById('callOverlay').classList.add('show');
+  document.getElementById('coAvatarRing').style.borderColor = ag.color;
   
+  document.getElementById('callOverlay').classList.add('show');
   playAudio(RINGTONE[callerKey], true); 
 
   document.getElementById('coAccept').onclick = () => {
@@ -362,6 +371,30 @@ function showCallOverlay(callerKey, callType, onAccept, onDecline) {
   document.getElementById('coDecline').onclick = () => {
     document.getElementById('callOverlay').classList.remove('show');
     stopAudio(); onDecline();
+  };
+}
+
+// FUNGSI LAYAR SEDANG MEMANGGIL
+function showOutgoingCall(targetName, callType, onCancel) {
+  const ag = AG[targetName] || {color:'#00d4ff',sym:'⬡'};
+  const isGroup = targetName === 'ALL AGENTS';
+  const displaySym = isGroup ? '⬡' : ag.sym;
+  const displayColor = isGroup ? '#00d4ff' : ag.color;
+
+  document.getElementById('coBtnsIncoming').style.display = 'none';
+  document.getElementById('coBtnsOutgoing').style.display = 'flex';
+  document.getElementById('coSym').textContent = displaySym;
+  document.getElementById('coSym').style.color = displayColor;
+  document.getElementById('coName').textContent = isGroup ? "GROUP CALL" : targetName;
+  document.getElementById('coName').style.color = displayColor;
+  document.getElementById('coType').textContent = 'MEMANGGIL...';
+  document.getElementById('coAvatarRing').style.borderColor = displayColor;
+  
+  document.getElementById('callOverlay').classList.add('show');
+
+  document.getElementById('coCancel').onclick = () => {
+    document.getElementById('callOverlay').classList.remove('show');
+    stopAudio(); onCancel();
   };
 }
 
@@ -456,12 +489,16 @@ const IS = window.IS = {
         if(type==='dm') playAudio(DM_SOUND[m.sender]);
         else playAudio(DM_SOUND[m.sender]);
 
-        // FITUR BACKGROUND NOTIFIKASI
+        // FITUR BACKGROUND NOTIFIKASI YANG BISA DI-KLIK
         if((document.hidden || !document.hasFocus()) && Notification.permission==='granted'){
-          new Notification(`${type==='dm'?'🔒 DM':'⬡ GROUP'} ${m.sender} · Insignia Six`, {
+          const notif = new Notification(`${type==='dm'?'🔒 DM':'⬡ GROUP'} ${m.sender} · Insignia Six`, {
               body: m.text.substring(0, 80),
               requireInteraction: true
           });
+          notif.onclick = function() {
+              window.focus(); // Fokus otomatis saat diklik
+              this.close();
+          };
         }
       }
     });
@@ -623,15 +660,19 @@ const IS = window.IS = {
         const isVideo=call.metadata?.video||false;
         pendingCall=call;
 
-        // FITUR BACKGROUND NOTIFIKASI TELEPON
+        // NOTIFIKASI BACKGROUND PANGGILAN KLIK -> FOKUS
         if ((document.hidden || !document.hasFocus()) && Notification.permission === 'granted') {
-            new Notification(`⚠️ PANGGILAN MASUK: ${caller}`, { 
+            const notif = new Notification(`⚠️ PANGGILAN MASUK: ${caller}`, { 
                 body: isVideo ? 'Video Call System' : 'Voice Call System',
                 requireInteraction: true 
             });
+            notif.onclick = function() {
+                window.focus();
+                this.close();
+            };
         }
 
-        showCallOverlay(
+        showIncomingCall(
           caller,
           isVideo?'📹 VIDEO CALL':'📞 VOICE CALL',
           ()=>{ 
@@ -660,6 +701,11 @@ const IS = window.IS = {
     if(activeCalls.length > 0){IS.endCall();return;}
     const targets=type==='group'?Object.keys(AG).filter(k=>k!==ME):[dmTarget];
     
+    // Tampilkan Layar Telepon (Memanggil)
+    showOutgoingCall(type === 'group' ? 'ALL AGENTS' : dmTarget, isVideo ? '📹 VIDEO CALL' : '📞 VOICE CALL', () => {
+        IS.endCall();
+    });
+
     navigator.mediaDevices.getUserMedia({audio:true,video:isVideo}).then(stream=>{
       localStream=stream;
       playAudio(RINGTONE[ME],true); 
@@ -671,7 +717,10 @@ const IS = window.IS = {
           if(!c) return;
           activeCalls.push(c);
           c.on('stream',r=>{
-            if(connectedCount === 0) stopAudio();
+            if(connectedCount === 0) {
+                stopAudio(); // Matikan nada dering ketika ada yang mengangkat
+                document.getElementById('callOverlay').classList.remove('show'); // Hilangkan layar memanggil
+            }
             connectedCount++;
             IS.attachRemote(r);
             document.getElementById('callBub').style.display='flex';
@@ -684,7 +733,10 @@ const IS = window.IS = {
         }catch(e){}
       });
       toast(`📞 CALLING ${type==='group'?'ALL AGENTS':dmTarget}...`,'var(--safe)');
-    }).catch(()=>toast('❌ Mic/Camera access denied','var(--danger)'));
+    }).catch(()=>{
+        toast('❌ Mic/Camera access denied','var(--danger)');
+        IS.endCall();
+    });
   },
 
   attachRemote(stream){
