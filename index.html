@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>INSIGNIA SIX v9.2</title>
+<title>INSIGNIA SIX v9.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -15,12 +15,11 @@
 html,body{height:100dvh;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;position:fixed;width:100%;-webkit-font-smoothing:antialiased;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:28px 28px;}
 
-/* LOADING - CEPAT */
-#loader{position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;animation:fadeOut 1.2s ease-in-out forwards;}
-@keyframes fadeOut{0%{opacity:1;}80%{opacity:1;}100%{opacity:0;display:none;}}
-.spin{width:44px;height:44px;border:3px solid rgba(0,212,255,.2);border-top:3px solid var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+/* LOADING */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.spin{width:44px;height:44px;border:3px solid rgba(0,212,255,.2);border-top:3px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.load-txt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:3px;animation:fade .6s ease-in-out infinite alternate;}
+.load-txt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:3px;animation:fade .8s ease-in-out infinite alternate;}
 @keyframes fade{from{opacity:.3;}to{opacity:1;}}
 
 /* CYBER GUARD — compact */
@@ -149,4 +148,560 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 </head>
 <body>
 
-<div id="loader"><div class="spin"></div><div class="load-txt">INSIGNIA v9.2 BO
+<div id="loader"><div class="spin"></div><div class="load-txt">INSIGNIA v9.1 BOOTING...</div></div>
+<div id="dangerOv"></div>
+<div id="proxAlert">⚠️ AGENT NEARBY — <span id="proxDist">0m</span></div>
+<div id="toast"></div>
+
+<div id="cg">
+  <div class="cg-scan"></div>
+  <div class="cg-title">INSIGNIA v9.1</div>
+  <div id="cgLog"><div>> BOOT: OK</div><div>> FIREBASE: INIT</div></div>
+  <div class="online-bar" id="onlineBar"></div>
+</div>
+
+<div id="callOverlay">
+  <div class="co-sym" id="coSym">◎</div>
+  <div class="co-name" id="coName">—</div>
+  <div class="co-type" id="coType">INCOMING CALL</div>
+  <div class="co-btns">
+    <button class="co-accept" id="coAccept">✓ ANGKAT</button>
+    <button class="co-decline" id="coDecline">✕ TOLAK</button>
+  </div>
+</div>
+
+<div id="callBub" onclick="IS.endCall()">📵</div>
+
+<div class="scr scr-center act" id="scrLogin">
+  <div class="login-box">
+    <div class="login-logo">⬡ INSIGNIA SIX</div>
+    <div class="login-sub">AGENT AUTHORIZATION v9.1</div>
+    <select id="selAgent"><option value="">— SELECT OPERATIVE —</option></select>
+    <input type="password" id="inCode" placeholder="ACCESS CODE" maxlength="10" autocomplete="off">
+    <button class="btn-login" onclick="IS.auth()">AUTHORIZE ACCESS</button>
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+<div class="scr" id="scrMain">
+  <div id="sidebar">
+    <button class="sb-btn act" id="sbGroup" onclick="IS.openPanel('group')" title="Group Chat">💬<div class="sb-badge" id="badgeGroup"></div></button>
+    <button class="sb-btn" id="sbAgents" onclick="IS.openPanel('agents')" title="Agents">👥<div class="sb-badge" id="badgeAgents"></div></button>
+    <button class="sb-btn" id="sbRadar" onclick="IS.openPanel('radar')" title="Radar">📡</button>
+    <div class="sb-sep"></div>
+    <div class="sb-bot">
+      <div class="my-avatar" id="myAvatar"></div>
+      <button class="sb-btn" onclick="IS.logout()" style="font-size:11px;font-family:'Share Tech Mono'">✕</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div class="chat-panel" id="panelGroup">
+      <div class="chat-header">
+        <div><div class="ch-name">⬡ INSIGNIA SIX</div><div class="ch-status" id="groupStatus">Group · 0 online</div></div>
+        <div class="ch-actions"><button class="ch-btn" id="btnGroupVoice" onclick="IS.call('group',false)">📞 CALL</button></div>
+      </div>
+      <div class="msgs" id="msgsGroup"></div>
+      <div class="typing-bar" id="typGroup"></div>
+      <div class="input-wrap">
+        <input class="msg-in" id="inGroup" placeholder="TRANSMIT TO ALL AGENTS..." maxlength="500" autocomplete="off">
+        <button class="send-btn" onclick="IS.send('group')">➤</button>
+      </div>
+    </div>
+
+    <div class="agents-panel" id="panelAgents" style="display:none;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;padding:10px 0 8px;">OPERATIVE DIRECTORY</div>
+      <div id="agentsList"></div>
+    </div>
+
+    <div class="chat-panel" id="panelDM" style="display:none;">
+      <div class="chat-header">
+        <button class="ch-btn" onclick="IS.openPanel('agents')" style="margin-right:4px;">←</button>
+        <div><div class="ch-name" id="dmName">—</div><div class="ch-status" id="dmStatus">—</div></div>
+        <div class="ch-actions">
+          <button class="ch-btn" id="btnDMVoice" onclick="IS.call('dm',false)">📞</button>
+          <button class="ch-btn" id="btnDMVideo" onclick="IS.call('dm',true)">📹</button>
+        </div>
+      </div>
+      <div class="msgs" id="msgsDM"></div>
+      <div class="typing-bar" id="typDM"></div>
+      <div class="input-wrap">
+        <input class="msg-in" id="inDM" placeholder="PRIVATE TRANSMISSION..." maxlength="500" autocomplete="off">
+        <button class="send-btn" onclick="IS.send('dm')">➤</button>
+      </div>
+    </div>
+
+    <div class="radar-panel" id="panelRadar" style="display:none;">
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;padding:0 0 4px;">📡 RADAR GPS — GLOBAL</div>
+      <div class="radar-wrap">
+        <div class="radar-ring" id="radarRing">
+          <div class="radar-sweep"></div>
+          <div id="radarDots"></div>
+        </div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--accent);" id="gpsLabel">GPS: INITIALIZING...</div>
+      </div>
+      <div class="radar-legend" id="radarLegend"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js"></script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js';
+import { getDatabase, ref, push, set, get, onValue, onChildAdded, onDisconnect, serverTimestamp, query, orderByChild, limitToLast }
+  from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js';
+import { getAuth, signInAnonymously }
+  from 'https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js';
+
+const FB = initializeApp({
+  apiKey:"AIzaSyB0SmjlOOC2c2FWOciH5e_tOQXTdsKtT6w",
+  authDomain:"insignia-six-7aaf5.firebaseapp.com",
+  databaseURL:"https://insignia-six-7aaf5-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"insignia-six-7aaf5",
+  storageBucket:"insignia-six-7aaf5.firebasestorage.app",
+  messagingSenderId:"327086889647",
+  appId:"1:327086889647:web:5739001980d01a3ced925a"
+});
+const db = getDatabase(FB);
+const auth = getAuth(FB);
+
+// ── AUDIO LINKS ──
+const RINGTONE = {
+  MIO:  "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/mio%20(3).mp3",
+  PENA: "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/pena%20(1).mp3",
+  VANIA:"https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/vania%20(1).mp3",
+  MIZU: "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/mizu.mp3",
+  PULU: "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/pulu.mp3",
+  AL:   "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/al%20(1).mp3"
+};
+const DM_SOUND = {
+  MIO:  "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/mio%20dm.mp3",
+  PENA: "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/pena%20dm.mp3",
+  VANIA:"https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/vania%20dm.mp3",
+  MIZU: "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/mizu%20dm.mp3",
+  PULU: "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/pulu%20dm.mp3",
+  AL:   "https://github.com/miocarletta/Insignia-six-audio/raw/refs/heads/main/Al%20dm.mp3"
+};
+
+// ── AGENTS ──
+const AG = {
+  MIO:  {code:'I.S-01',color:'#ffffff',sym:'◎',role:'LEAD',     city:'Medan',    lat:3.595, lng:98.672},
+  PENA: {code:'I.S-02',color:'#4a8edb',sym:'△',role:'TACTICAL', city:'Palembang',lat:-2.976,lng:104.775},
+  VANIA:{code:'I.S-03',color:'#8dcaff',sym:'◈',role:'INTEL',    city:'Sorong',   lat:-0.866,lng:131.250},
+  MIZU: {code:'I.S-04',color:'#acb9c9',sym:'〜',role:'SUPPORT',  city:'Palembang',lat:-2.976,lng:104.775},
+  PULU: {code:'I.S-05',color:'#4de37d',sym:'⬡',role:'FIELD',    city:'Jakarta',  lat:-6.200,lng:106.816},
+  AL:   {code:'I.S-06',color:'#aaaaaa',sym:'□',role:'COMMAND',  city:'Sanggau',  lat:0.131, lng:110.605}
+};
+
+let ME=null, presRef=null, peer=null, activeCalls=[], localStream=null;
+let typTimers={}, msgCounts={group:0, dm:0}, dmTarget=null, watchId=null, myPos=null;
+let currentAudio=null, pendingCall=null;
+
+// Listener References for Clean Cleanup
+let unsubChat = { group: null, dm: null };
+let unsubTyping = { group: null, dm: null };
+
+// ── AUDIO ──
+function playAudio(url, loop=false) {
+  stopAudio();
+  if(!url) return;
+  currentAudio = new Audio(url);
+  currentAudio.loop = loop;
+  currentAudio.volume = 0.85;
+  currentAudio.play().catch(()=>{});
+}
+function stopAudio() {
+  if(currentAudio){ currentAudio.pause(); currentAudio.currentTime=0; currentAudio=null; }
+}
+
+// ── HELPERS ──
+function esc(s){ const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+function fmtTime(t){ return t?new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):''; }
+function log(msg,warn){
+  const el=document.getElementById('cgLog');
+  const d=document.createElement('div'); d.textContent='> '+msg;
+  if(warn) d.className='danger-log';
+  el.prepend(d); while(el.children.length>8) el.removeChild(el.lastChild);
+}
+function toast(msg,color){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.borderColor=color||'var(--accent)'; t.style.color=color||'var(--accent)';
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200);
+}
+function unlockAudio(){ try{ const a=new Audio(); a.play().catch(()=>{}); }catch(e){} }
+function breach(){
+  const ov=document.getElementById('dangerOv'),cg=document.getElementById('cg');
+  ov.style.display='block'; cg.style.borderColor='var(--danger)'; cg.style.color='var(--danger)';
+  log('!! INTRUSION ATTEMPT !!',true);
+  setTimeout(()=>{ ov.style.display='none'; cg.style.borderColor='var(--safe)'; cg.style.color='var(--safe)'; },2500);
+}
+
+// ── INCOMING CALL OVERLAY ──
+function showCallOverlay(callerKey, callType, onAccept, onDecline) {
+  const ag = AG[callerKey]||{color:'#00d4ff',sym:'◎'};
+  document.getElementById('coSym').textContent = ag.sym;
+  document.getElementById('coSym').style.color = ag.color;
+  document.getElementById('coName').textContent = callerKey;
+  document.getElementById('coName').style.color = ag.color;
+  document.getElementById('coType').textContent = callType;
+  document.getElementById('callOverlay').classList.add('show');
+  
+  playAudio(RINGTONE[callerKey], true); // Play ringtone caller
+
+  document.getElementById('coAccept').onclick = () => {
+    document.getElementById('callOverlay').classList.remove('show');
+    stopAudio(); onAccept();
+  };
+  document.getElementById('coDecline').onclick = () => {
+    document.getElementById('callOverlay').classList.remove('show');
+    stopAudio(); onDecline();
+  };
+}
+
+const IS = window.IS = {
+  async init(){
+    const sel=document.getElementById('selAgent');
+    Object.keys(AG).forEach(k=>{
+      const o=document.createElement('option'); o.value=k;
+      o.textContent=`${AG[k].sym}  ${k}  —  ${AG[k].role}`; sel.appendChild(o);
+    });
+    const bar=document.getElementById('onlineBar');
+    Object.keys(AG).forEach(k=>{
+      const d=document.createElement('div'); d.className='odot'; d.id='dot-'+k;
+      d.style.cssText=`background:${AG[k].color};color:${AG[k].color};`; d.title=k; bar.appendChild(d);
+    });
+    document.getElementById('inCode').addEventListener('keydown',e=>{ if(e.key==='Enter') IS.auth(); });
+    document.getElementById('inGroup').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();IS.send('group');} });
+    document.getElementById('inGroup').addEventListener('input',()=>IS.typing('group'));
+    document.getElementById('inDM').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();IS.send('dm');} });
+    document.getElementById('inDM').addEventListener('input',()=>IS.typing('dm'));
+    try{ await signInAnonymously(auth); }catch(e){}
+    document.getElementById('loader').style.display='none';
+    log('SYSTEM READY');
+  },
+
+  auth(){
+    unlockAudio();
+    const id=document.getElementById('selAgent').value;
+    const code=document.getElementById('inCode').value.trim().toUpperCase();
+    const msg=document.getElementById('loginMsg');
+    if(!id){ msg.style.color='var(--danger)'; msg.textContent='Select operative first'; return; }
+    if(code.replace(/[^A-Z0-9.\-]/g,'')!==AG[id].code){
+      breach(); msg.style.color='var(--danger)'; msg.textContent='UNAUTHORIZED — ACCESS DENIED';
+      setTimeout(()=>msg.textContent='',2500); return;
+    }
+    ME=id; IS.startSession();
+  },
+
+  startSession(){
+    document.getElementById('scrLogin').classList.remove('act');
+    document.getElementById('scrMain').classList.add('act');
+    const a=AG[ME];
+    const av=document.getElementById('myAvatar');
+    av.textContent=a.sym; av.style.borderColor=a.color; av.style.color=a.color;
+    av.style.boxShadow=`0 0 8px ${a.color}44`;
+    log(`NODE: ${ME}`);
+    presRef=ref(db,`presence/${ME}`);
+    set(presRef,{online:true,name:ME,ts:serverTimestamp()});
+    onDisconnect(presRef).set({online:false,name:ME,ts:serverTimestamp()});
+    onValue(ref(db,'presence'),snap=>{
+      const d=snap.val()||{}; let n=0;
+      Object.keys(AG).forEach(k=>{
+        const on=d[k]?.online===true;
+        document.getElementById('dot-'+k)?.classList.toggle('on',on);
+        if(on) n++;
+        const adot=document.getElementById('adot-'+k);
+        if(adot){ adot.classList.toggle('on',on); adot.style.background=on?AG[k].color:'#555'; }
+        if(dmTarget===k) document.getElementById('dmStatus').textContent=on?'● ONLINE':'○ OFFLINE';
+      });
+      document.getElementById('groupStatus').textContent=`Group · ${n} online`;
+      log(`ONLINE: ${n}`);
+    });
+    IS.listenChat('group','messages/group','msgsGroup','badgeGroup');
+    IS.listenTyping('group');
+    IS.buildAgentsList();
+    IS.startGPS();
+    IS.initPeer();
+    if('Notification' in window && Notification.permission==='default') Notification.requestPermission();
+    IS.openPanel('group');
+  },
+
+  listenChat(type,path,boxId,badgeId){
+    if (unsubChat[type]) unsubChat[type](); // Cleanup old listener
+    document.getElementById(boxId).innerHTML = ''; // Reset chat window
+
+    const q=query(ref(db,path),orderByChild('ts'),limitToLast(80));
+    unsubChat[type] = onChildAdded(q,snap=>{
+      const m=snap.val(); if(!m) return;
+      const isNew=(msgCounts[type]||0)>0;
+      msgCounts[type]=(msgCounts[type]||0)+1;
+      IS.renderMsg(boxId,m.sender,m.text,m.sender===ME,m.ts);
+      
+      if(isNew && m.sender!==ME){
+        const panelId = type==='group' ? 'panelGroup' : 'panelDM';
+        const activePanel = document.querySelector('#content > [id^="panel"]:not([style*="none"])');
+        const isVisible = activePanel && activePanel.id === panelId && !document.hidden;
+
+        if(!isVisible) document.getElementById(badgeId)?.classList.add('show');
+        toast(`${AG[m.sender]?.sym||''} ${m.sender}: ${m.text.substring(0,38)}`,AG[m.sender]?.color);
+        
+        // Sound Routing
+        if(type==='dm') playAudio(DM_SOUND[m.sender]);
+        else playAudio(DM_SOUND[m.sender]);
+
+        // Background Notification Check (Jika tab disembunyikan/minimize)
+        if(document.hidden && Notification.permission==='granted'){
+          new Notification(`${type==='dm'?'🔒 DM':'⬡ GROUP'} ${m.sender} · Insignia Six`,{body:m.text.substring(0,80)});
+        }
+      }
+    });
+  },
+
+  listenDM(target){
+    const members=[ME,target].sort();
+    msgCounts['dm']=0;
+    IS.listenChat('dm',`messages/dm/${members.join('_')}`,'msgsDM','badgeAgents');
+    IS.listenTyping('dm',target);
+  },
+
+  listenTyping(type,target){
+    if (unsubTyping[type]) unsubTyping[type]();
+    const path=type==='group'?'typing/group':`typing/dm/${[ME,target].sort().join('_')}`;
+    unsubTyping[type] = onValue(ref(db,path),snap=>{
+      const d=snap.val()||{};
+      const typers=Object.keys(d).filter(k=>k!==ME&&d[k]===true);
+      const el=document.getElementById(type==='group'?'typGroup':'typDM');
+      if(el) el.textContent=typers.length?`${typers.join(', ')} transmitting...`:'';
+    });
+  },
+
+  send(type){
+    const inp=document.getElementById(type==='group'?'inGroup':'inDM');
+    const raw=inp.value.trim(); if(!raw||!ME) return;
+    const text=raw.replace(/[<>]/g,'').substring(0,500); if(!text) return;
+    const path=type==='group'?'messages/group':`messages/dm/${[ME,dmTarget].sort().join('_')}`;
+    push(ref(db,path),{sender:ME,text,ts:serverTimestamp()});
+    const tpath=type==='group'?`typing/group/${ME}`:`typing/dm/${[ME,dmTarget].sort().join('_')}/${ME}`;
+    set(ref(db,tpath),false); inp.value='';
+  },
+
+  typing(type){
+    if(!ME) return;
+    const path=type==='group'?`typing/group/${ME}`:`typing/dm/${[ME,dmTarget].sort().join('_')}/${ME}`;
+    set(ref(db,path),true);
+    const key=type+(dmTarget||'');
+    clearTimeout(typTimers[key]);
+    typTimers[key]=setTimeout(()=>set(ref(db,path),false),2000);
+  },
+
+  renderMsg(boxId,sender,text,mine,ts_){
+    const box=document.getElementById(boxId); if(!box) return;
+    const a=AG[sender]||{color:'#fff',sym:'?'};
+    const div=document.createElement('div');
+    div.className=`bubble b-${sender} ${mine?'mine':''}`;
+    div.innerHTML=`<div class="bsender" style="color:${a.color}">${a.sym} ${sender}</div>${esc(text)}<div class="btime">${fmtTime(ts_)}</div>`;
+    box.appendChild(div); box.scrollTop=box.scrollHeight;
+  },
+
+  openPanel(name){
+    ['group','agents','dm','radar'].forEach(p=>{
+      // Perbaikan Mapping Penamaan ID HTML agar panel DM bisa muncul sempurna
+      const idName = p === 'dm' ? 'panelDM' : 'panel' + p.charAt(0).toUpperCase() + p.slice(1);
+      const el=document.getElementById(idName);
+      if(el) el.style.display=p===name?'flex':'none';
+    });
+    
+    ['sbGroup','sbAgents','sbRadar'].forEach(id=>document.getElementById(id)?.classList.remove('act'));
+    const map={group:'sbGroup',agents:'sbAgents',dm:'sbAgents',radar:'sbRadar'};
+    document.getElementById(map[name])?.classList.add('act');
+    if(name==='group') document.getElementById('badgeGroup')?.classList.remove('show');
+    if(name==='dm'||name==='agents') document.getElementById('badgeAgents')?.classList.remove('show');
+    if(name==='radar') IS.renderRadar();
+
+    // Pastikan scroll ke bawah setiap pindah panel chat
+    setTimeout(() => {
+        const box = document.getElementById(name === 'dm' ? 'msgsDM' : 'msgsGroup');
+        if (box) box.scrollTop = box.scrollHeight;
+    }, 50);
+  },
+
+  buildAgentsList(){
+    const list=document.getElementById('agentsList'); list.innerHTML='';
+    Object.keys(AG).filter(k=>k!==ME).forEach(k=>{
+      const a=AG[k];
+      const card=document.createElement('div'); card.className='agent-card';
+      card.innerHTML=`<div class="ag-sym" style="color:${a.color}">${a.sym}</div>
+        <div class="ag-info"><div class="ag-name" style="color:${a.color}">${k}</div>
+        <div class="ag-role">${a.role} · ${a.city}</div></div>
+        <div class="ag-online" id="adot-${k}" style="background:#555;color:${a.color}"></div>`;
+      card.onclick=()=>IS.openDM(k);
+      list.appendChild(card);
+    });
+  },
+
+  openDM(target){
+    dmTarget=target; const a=AG[target];
+    document.getElementById('dmName').textContent=`${a.sym} ${target}`;
+    document.getElementById('dmName').style.color=a.color;
+    IS.listenDM(target); IS.openPanel('dm');
+  },
+
+  startGPS(){
+    if(!navigator.geolocation){ document.getElementById('gpsLabel').textContent='GPS: N/A'; return; }
+    document.getElementById('gpsLabel').textContent='GPS: SCANNING...';
+    myPos={lat:AG[ME].lat,lng:AG[ME].lng};
+    set(ref(db,`locations/${ME}`),{lat:myPos.lat,lng:myPos.lng,ts:serverTimestamp(),online:true,city:AG[ME].city,approx:true});
+    watchId=navigator.geolocation.watchPosition(pos=>{
+      myPos={lat:pos.coords.latitude,lng:pos.coords.longitude};
+      set(ref(db,`locations/${ME}`),{lat:myPos.lat,lng:myPos.lng,ts:serverTimestamp(),online:true,city:AG[ME].city});
+      document.getElementById('gpsLabel').textContent=`GPS: ${myPos.lat.toFixed(4)}, ${myPos.lng.toFixed(4)}`;
+    },()=>{
+      document.getElementById('gpsLabel').textContent=`GPS: APPROX (${AG[ME].city})`;
+    },{enableHighAccuracy:true,timeout:8000,maximumAge:10000});
+    onValue(ref(db,'locations'),snap=>{
+      const d=snap.val()||{};
+      if(document.getElementById('panelRadar').style.display!=='none') IS.renderRadarData(d);
+    });
+  },
+
+  renderRadar(){ get(ref(db,'locations')).then(snap=>IS.renderRadarData(snap.val()||{})); },
+
+  renderRadarData(locs){
+    const dots=document.getElementById('radarDots'); dots.innerHTML='';
+    const legend=document.getElementById('radarLegend'); legend.innerHTML='';
+    const base=myPos||{lat:AG[ME].lat,lng:AG[ME].lng};
+    const entries=Object.keys(AG).filter(k=>k!==ME&&locs[k]);
+    if(!entries.length){ legend.innerHTML='<div style="font-family:Share+Tech+Mono,monospace;font-size:10px;padding:8px;opacity:.4;">No agents detected</div>'; return; }
+    let maxDist=100000;
+    entries.forEach(k=>{ const d=IS.haversine(base.lat,base.lng,locs[k].lat,locs[k].lng); if(d>maxDist)maxDist=d; });
+    entries.forEach(k=>{
+      const l=locs[k],a=AG[k];
+      const dist=IS.haversine(base.lat,base.lng,l.lat,l.lng);
+      const scale=Math.min(dist/maxDist,1)*0.42;
+      const angle=Math.atan2(l.lng-base.lng,l.lat-base.lat);
+      const x=50+Math.sin(angle)*scale*100, y=50-Math.cos(angle)*scale*100;
+      const dot=document.createElement('div'); dot.className='rdot';
+      dot.style.cssText=`left:${x}%;top:${y}%;background:${a.color};color:${a.color};`;
+      const lbl=document.createElement('div'); lbl.className='rdot-label';
+      lbl.style.cssText=`left:${x}%;top:${y}%;color:${a.color};`; lbl.textContent=k;
+      dots.appendChild(dot); dots.appendChild(lbl);
+      const ds=dist>1000?`${(dist/1000).toFixed(0)}km`:`${Math.round(dist)}m`;
+      const li=document.createElement('div'); li.className='rl-item';
+      li.innerHTML=`<div class="rl-dot" style="background:${a.color};box-shadow:0 0 5px ${a.color}"></div>
+        <div class="rl-name" style="color:${a.color}">${a.sym} ${k}</div>
+        <div class="rl-loc">${l.city||a.city}</div><div class="rl-dist">${ds}</div>`;
+      legend.appendChild(li);
+      if(dist<5000){ document.getElementById('proxDist').textContent=ds; document.getElementById('proxAlert').classList.add('show'); setTimeout(()=>document.getElementById('proxAlert').classList.remove('show'),4000); }
+    });
+    const me=document.createElement('div'); me.className='rdot';
+    me.style.cssText=`left:50%;top:50%;background:${AG[ME].color};color:${AG[ME].color};box-shadow:0 0 12px ${AG[ME].color};z-index:5;`;
+    const melbl=document.createElement('div'); melbl.className='rdot-label';
+    melbl.style.cssText=`left:50%;top:50%;color:${AG[ME].color};font-weight:bold;`; melbl.textContent=ME+' ★';
+    dots.appendChild(me); dots.appendChild(melbl);
+  },
+
+  haversine(lat1,lng1,lat2,lng2){
+    const R=6371000,r=Math.PI/180,dl=(lat2-lat1)*r,dg=(lng2-lng1)*r;
+    const a=Math.sin(dl/2)**2+Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(dg/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  },
+
+  initPeer(){
+    try{
+      peer=new Peer('IS91_'+ME,{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun2.l.google.com:19302'}]}});
+      peer.on('open',()=>log('PEER: READY'));
+      peer.on('call',call=>{
+        const caller=call.metadata?.caller||'UNKNOWN';
+        const isVideo=call.metadata?.video||false;
+        pendingCall=call;
+
+        // Background Notification untuk telepon
+        if (document.hidden && Notification.permission === 'granted') {
+            new Notification(`⚠️ PANGGILAN MASUK: ${caller}`, { body: isVideo ? 'Video Call System' : 'Voice Call System' });
+        }
+
+        showCallOverlay(
+          caller,
+          isVideo?'📹 VIDEO CALL':'📞 VOICE CALL',
+          ()=>{ // Accept
+            navigator.mediaDevices.getUserMedia({audio:true,video:isVideo}).then(stream=>{
+              localStream=stream; call.answer(stream);
+              call.on('stream',r=>IS.attachRemote(r));
+              call.on('close',()=>IS.removeCall(call));
+              activeCalls.push(call);
+              document.getElementById('callBub').style.display='flex';
+              document.getElementById('btnGroupVoice').classList.add('calling');
+              toast(`🟢 CONNECTED: ${caller}`,AG[caller]?.color||'var(--safe)');
+            }).catch(()=>toast('❌ Mic denied','var(--danger)'));
+          },
+          ()=>{ try{call.close();}catch(e){} pendingCall=null; } // Decline
+        );
+      });
+      peer.on('error',e=>log('PEER ERR: '+e.type,true));
+    }catch(e){}
+  },
+
+  call(type,isVideo){
+    if(activeCalls.length > 0){IS.endCall();return;}
+    const targets=type==='group'?Object.keys(AG).filter(k=>k!==ME):[dmTarget];
+    
+    navigator.mediaDevices.getUserMedia({audio:true,video:isVideo}).then(stream=>{
+      localStream=stream;
+      playAudio(RINGTONE[ME],true); // Outgoing ring
+      let connectedCount = 0;
+
+      targets.forEach(k=>{
+        try{
+          const c=peer.call('IS91_'+k,stream,{metadata:{caller:ME,video:isVideo}});
+          if(!c) return;
+          activeCalls.push(c);
+          c.on('stream',r=>{
+            if(connectedCount === 0) stopAudio();
+            connectedCount++;
+            IS.attachRemote(r);
+            document.getElementById('callBub').style.display='flex';
+            document.getElementById('btnGroupVoice').classList.add('calling');
+          });
+          c.on('close',()=>IS.removeCall(c));
+          c.on('error',()=>{});
+        }catch(e){}
+      });
+      toast(`📞 CALLING ${type==='group'?'ALL AGENTS':dmTarget}...`,'var(--safe)');
+    }).catch(()=>toast('❌ Mic/Camera access denied','var(--danger)'));
+  },
+
+  attachRemote(stream){
+    const a=document.createElement('audio');
+    a.id='ra-'+Date.now(); a.autoplay=true; a.setAttribute('playsinline','');
+    a.srcObject=stream; document.body.appendChild(a);
+  },
+
+  removeCall(c){
+    activeCalls = activeCalls.filter(call => call !== c);
+    if(activeCalls.length === 0){ IS.endCall(); }
+  },
+
+  endCall(){
+    stopAudio();
+    document.getElementById('callOverlay').classList.remove('show');
+    activeCalls.forEach(c => { try { c.close(); } catch (e) {} });
+    activeCalls = [];
+    if(localStream){localStream.getTracks().forEach(t=>t.stop()); localStream=null;}
+    pendingCall=null;
+    document.getElementById('callBub').style.display='none';
+    document.getElementById('btnGroupVoice').classList.remove('calling');
+    document.querySelectorAll('[id^="ra-"]').forEach(a=>a.remove());
+    toast('📵 CALL ENDED','var(--danger)');
+  },
+
+  logout(){
+    if(presRef) set(presRef,{online:false,ts:serverTimestamp()});
+    if(watchId) navigator.geolocation.clearWatch(watchId);
+    IS.endCall(); location.reload();
+  }
+};
+
+IS.init();
+</script>
+</body>
+</html>
